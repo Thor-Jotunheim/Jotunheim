@@ -35,7 +35,50 @@ firebase.initializeApp(firebaseConfig);
     };
 
     function displayPurchasableItems() {
-      google.script.run.withSuccessHandler(showItems).getPurchasableItems();
+      getPurchasableItems().then(function(items) {
+        showItems(items);
+      }).catch(function(error) {
+        console.log(error);
+      });
+    }
+
+    function getPurchasableItems() {
+      var collectionPaths = [
+        "/ItemDatabase/Type/AdminShop",
+        "/ItemDatabase/Type/Ammo",
+        "/ItemDatabase/Type/ArmorSets",
+        "/ItemDatabase/Type/BossDrops",
+        "/ItemDatabase/Type/BossSummons",
+        "/ItemDatabase/Type/BuildingCraftingMaterials",
+        "/ItemDatabase/Type/CookedFood",
+        "/ItemDatabase/Type/Currency",
+        "/ItemDatabase/Type/Fish",
+        "/ItemDatabase/Type/FishingBait",
+        "/ItemDatabase/Type/Mead",
+        "/ItemDatabase/Type/RawFood",
+        "/ItemDatabase/Type/Seeds",
+        "/ItemDatabase/Type/Shields",
+        "/ItemDatabase/Type/TamedAnimals",
+        "/ItemDatabase/Type/Tools",
+        "/ItemDatabase/Type/Trophies",
+        "/ItemDatabase/Type/Weapons"
+      ];
+
+      var promises = collectionPaths.map(function(collectionPath) {
+        return firestore.collection(collectionPath)
+          .where("AdminShopList", "==", true)
+          .get()
+          .then(function(querySnapshot) {
+            return querySnapshot.docs.map(function(doc) {
+              return doc.get("ItemName");
+            });
+          });
+      });
+
+      return Promise.all(promises)
+        .then(function(results) {
+          return results.flat();
+        });
     }
 
     function showItems(items) {
