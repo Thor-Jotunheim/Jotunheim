@@ -13,81 +13,21 @@
 
   <div id="itemList"></div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
   <script>
-    // Initialize Firebase app
-    var firebaseConfig = {
-        apiKey: "AIzaSyA438akSsOMeCY8OFufbAqnwLeUn7rMpj0",
-  authDomain: "jotunheimdb.firebaseapp.com",
-  databaseURL: "https://jotunheimdb-default-rtdb.firebaseio.com",
-  projectId: "jotunheimdb",
-  storageBucket: "jotunheimdb.appspot.com",
-  messagingSenderId: "1076646258266",
-  appId: "1:1076646258266:web:d3026093cc3c46c72e1a63",
-  measurementId: "G-D9DDZGYWRV"
-};
-firebase.initializeApp(firebaseConfig);
-    var firestore = firebase.firestore();
-
     window.onload = function() {
-      displayPurchasableItems();
+      fetch('/purchasable-items')
+        .then((response) => response.json())
+        .then((data) => showItems(data))
+        .catch((error) => console.error(error));
     };
 
-    function displayPurchasableItems() {
-      getPurchasableItems().then(function(items) {
-        showItems(items);
-      }).catch(function(error) {
-        console.log(error);
-      });
-    }
-
-    function getPurchasableItems() {
-      var collectionPaths = [
-        "/ItemDatabase/Type/AdminShop",
-        "/ItemDatabase/Type/Ammo",
-        "/ItemDatabase/Type/ArmorSets",
-        "/ItemDatabase/Type/BossDrops",
-        "/ItemDatabase/Type/BossSummons",
-        "/ItemDatabase/Type/BuildingCraftingMaterials",
-        "/ItemDatabase/Type/CookedFood",
-        "/ItemDatabase/Type/Currency",
-        "/ItemDatabase/Type/Fish",
-        "/ItemDatabase/Type/FishingBait",
-        "/ItemDatabase/Type/Mead",
-        "/ItemDatabase/Type/RawFood",
-        "/ItemDatabase/Type/Seeds",
-        "/ItemDatabase/Type/Shields",
-        "/ItemDatabase/Type/TamedAnimals",
-        "/ItemDatabase/Type/Tools",
-        "/ItemDatabase/Type/Trophies",
-        "/ItemDatabase/Type/Weapons"
-      ];
-
-      var promises = collectionPaths.map(function(collectionPath) {
-        return firestore.collection(collectionPath)
-          .where("AdminShopList", "==", true)
-          .get()
-          .then(function(querySnapshot) {
-            return querySnapshot.docs.map(function(doc) {
-              return doc.get("ItemName");
-            });
-          });
-      });
-
-      return Promise.all(promises)
-        .then(function(results) {
-          return results.flat();
-        });
-    }
-
     function showItems(items) {
-      var itemList = document.getElementById("itemList");
-      itemList.innerHTML = ""; // Clear previous items
+      var itemList = document.getElementById('itemList');
+      itemList.innerHTML = ''; // Clear previous items
 
       // Iterate over items and display them
       items.forEach(function(item) {
-        var itemDiv = document.createElement("div");
+        var itemDiv = document.createElement('div');
         itemDiv.textContent = item;
         itemList.appendChild(itemDiv);
       });
