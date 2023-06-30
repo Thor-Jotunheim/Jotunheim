@@ -15,6 +15,29 @@ require('firebase/firestore');
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
 
+const express = require('express');
+const { getPurchasableItemsServer } = require('./server'); // Assuming your server-side code is in a separate file
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.get('/purchasable-items', async (req, res) => {
+  try {
+    const items = await getPurchasableItemsServer();
+    res.json(items);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.use(express.static('public')); // Serve static files from the 'public' directory
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+
 function getPurchasableItems() {
   const collectionPaths = [
     '/ItemDatabase/Type/AdminShop',
