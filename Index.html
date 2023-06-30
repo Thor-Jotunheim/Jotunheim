@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <style>
+    /* Add your custom CSS styles here */
+  </style>
+</head>
+
+<body>
+  <h1>Jotunheim Point of Sale</h1>
+
+  <div id="itemList"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+  <script>
+    // Initialize Firebase app
+    var firebaseConfig = {
+        apiKey: "AIzaSyA438akSsOMeCY8OFufbAqnwLeUn7rMpj0",
+  authDomain: "jotunheimdb.firebaseapp.com",
+  databaseURL: "https://jotunheimdb-default-rtdb.firebaseio.com",
+  projectId: "jotunheimdb",
+  storageBucket: "jotunheimdb.appspot.com",
+  messagingSenderId: "1076646258266",
+  appId: "1:1076646258266:web:d3026093cc3c46c72e1a63",
+  measurementId: "G-D9DDZGYWRV"
+};
+firebase.initializeApp(firebaseConfig);
+    var firestore = firebase.firestore();
+
+    window.onload = function() {
+      displayPurchasableItems();
+    };
+
+    function displayPurchasableItems() {
+      google.script.run.withSuccessHandler(showItems).getPurchasableItems();
+    }
+
+    function showItems(items) {
+      var itemList = document.getElementById("itemList");
+      itemList.innerHTML = ""; // Clear previous items
+
+      // Iterate over items and display them
+      items.forEach(function(item) {
+        var itemDiv = document.createElement("div");
+        itemDiv.textContent = item;
+        itemList.appendChild(itemDiv);
+      });
+    }
+  </script>
+</body>
+
+</html>
